@@ -9,5 +9,4 @@ public class LiteraApplication {
     public static void main(String[] args) {
         SpringApplication.run(LiteraApplication.class, args);
     }
-
 }
