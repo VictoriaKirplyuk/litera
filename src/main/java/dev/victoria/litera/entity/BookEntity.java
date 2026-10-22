@@ -1,8 +1,11 @@
-package dev.victoria.litera;
+package dev.victoria.litera.entity;
 
 import jakarta.persistence.*;
 
+import java.time.Year;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "books")
@@ -11,38 +14,45 @@ public class BookEntity {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(name = "title", nullable = false, length = 200)
-    String title;
+    private String title;
 
     @Column(name = "isbn", nullable = false, length = 20)
-    String ISBN;
+    private String ISBN;
 
     @Column(name = "language_code", nullable = false, length = 2)
-    String languageCode;
+    private String languageCode;
 
     @Column(name = "published_at", nullable = false)
-    String publishedAt;
+    private Year publishedAt;
 
     @Column(name = "age_limit")
-    Integer ageLimit;
+    private Integer ageLimit;
 
     @Column(name = "page_count")
-    Integer pageCount;
+    private Integer pageCount;
 
     @Column(name = "print_run")
-    Integer printRun;
+    private Integer printRun;
 
-    public BookEntity(Long id,
+    @ManyToMany
+    @JoinTable(
+            name = "book_authors",
+            joinColumns = { @JoinColumn(name = "book_id") },
+            inverseJoinColumns = { @JoinColumn(name = "author_id") }
+    )
+    private final Set<AuthorEntity> authors = new HashSet<>();
+
+    public BookEntity(
                       String title,
                       String ISBN,
                       String languageCode,
-                      String publishedAt,
+                      Year publishedAt,
                       Integer ageLimit,
                       Integer pageCount,
                       Integer printRun) {
-        this.id = id;
         this.title = title;
         this.ISBN = ISBN;
         this.languageCode = languageCode;
@@ -86,11 +96,11 @@ public class BookEntity {
         this.languageCode = languageCode;
     }
 
-    public String getPublishedAt() {
+    public Year getPublishedAt() {
         return publishedAt;
     }
 
-    public void setPublishedAt(String publishedAt) {
+    public void setPublishedAt(Year publishedAt) {
         this.publishedAt = publishedAt;
     }
 
@@ -116,6 +126,14 @@ public class BookEntity {
 
     public void setPrintRun(Integer printRun) {
         this.printRun = printRun;
+    }
+
+    public void setAuthors(Set<AuthorEntity> authors) {
+        this.authors.addAll(authors);
+    }
+
+    public Set<AuthorEntity> getAuthors() {
+        return authors;
     }
 
     @Override
