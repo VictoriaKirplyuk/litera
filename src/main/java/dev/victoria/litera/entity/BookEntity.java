@@ -19,7 +19,8 @@ public class BookEntity {
     @Column(name = "title", nullable = false, length = 200)
     private String title;
 
-    @Column(name = "isbn", nullable = false, length = 20)
+    @Column(name = "isbn", nullable = false, length = 20, unique = true)
+    @Convert(converter = BookIsbnConverter.class)
     private String ISBN;
 
     @Column(name = "language_code", nullable = false, length = 2)

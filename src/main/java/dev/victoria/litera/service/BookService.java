@@ -7,7 +7,9 @@ import dev.victoria.litera.entity.BookEntity;
 import dev.victoria.litera.mapper.BookMapper;
 import dev.victoria.litera.repository.AuthorRepository;
 import dev.victoria.litera.repository.BookRepository;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import net.creativecouple.validation.isbn.ISBN;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,13 +34,17 @@ public class BookService {
     }
 
     public ResponseBookDto createBook(RequestBookDto request) {
+        String isbn = ISBN.valueOf(request.ISBN()).toString();
+
+        if (repository.existsByISBN(isbn)) throw new EntityExistsException("Book with this ISBN already exists");
+
         List<AuthorEntity> authors = authorRepository.findAllById(request.authorIds());
 
         if (authors.isEmpty()) throw new EntityNotFoundException("Authors with such IDs don't exist");
 
         BookEntity newBook = new BookEntity(
                 request.title(),
-                request.ISBN(),
+                isbn,
                 request.languageCode(),
                 request.publishedAt(),
                 request.ageLimit(),

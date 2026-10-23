@@ -4,6 +4,8 @@ import dev.victoria.litera.dto.ResponseErrorDto;
 import dev.victoria.litera.dto.ResponseErrorFieldDto;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,6 +16,19 @@ import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler
+    ResponseEntity<ResponseErrorDto> handleException(Exception exception) {
+        ResponseErrorDto responseErrorDto = new ResponseErrorDto(
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                exception.getMessage(),
+                List.of()
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseErrorDto);
+    }
+
     @ExceptionHandler(EntityExistsException.class)
     public ResponseEntity<ResponseErrorDto> handleEntityExistsException(EntityExistsException exception) {
         ResponseErrorDto responseErrorDto = new ResponseErrorDto(
